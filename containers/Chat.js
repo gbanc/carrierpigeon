@@ -32,25 +32,7 @@ function Chat() {
   };
   
   
-  setMessages(Array.isArray(messages) && messages.map((message, index) => {
-    if(index % 2 == 0) {
-      return (
-        <UserMessage
-          key = { index }
-          username = { "GenericUsername" }
-          message = { message }
-        />
-      )
-    } else {
-      return (
-        <ServerMessage
-          key = { index }
-          username = { "Server" }
-          message = { message }
-        />
-      )
-    }
-  });)
+
     
   return (
     <View>
@@ -69,8 +51,7 @@ function Chat() {
           <TextInput
             className="input"
             type="text"
-            // value = {inputMessage}
-            //onChangeText = {() => setInputMessage(inputMessage)}
+            onChangeText={text => setInputMessage(text)}
           />
         </View>
       </View>
