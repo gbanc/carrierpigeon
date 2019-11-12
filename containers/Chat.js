@@ -7,25 +7,26 @@ import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 function Chat() {
   const [inputMessage, setInputMessage] = useState(0);
   const [messages, setMessages] = useState([]);
-  let socket = new Socket("http://localhost:4000/socket", {params:
-    {token: window.userToken}
-  });
-  socket.connect();
+  const socket = new Socket("http://192.168.1.148:4000/socket", {});
+  socket.onOpen(event => console.log('Connected.'))
+  socket.onError(event => console.log('Cannot connect.'))
+  socket.onClose(event => console.log('Goodbye.'))
+  socket.connect({})
   const channel = socket.channel("room:lobby", {});
   channel.join()
   .receive("ok", response => { console.log("Joined successfully", response) })
 
-  useEffect(() => {
+  channel.on("new_msg", payload => {
+    setMessages(messages.concat(payload.body))
+  })
 
-    channel.on("new_msg", payload => {
-      setMessages(messages.concat(payload.body))
-    })
+  useEffect(() => {
   }, []);
 
 
   const handleSubmit = (evt) => {
     evt.preventDefault();
-    alert(`Submitting message ${inputMessage}`)
+    //alert(`Submitting message ${inputMessage}`)
     channel.push("new_msg", {body: inputMessage})
     setMessages(messages.concat(inputMessage))
     setInputMessage(0)
@@ -70,6 +71,7 @@ function Chat() {
         </View>
         <View className="control">
           <TextInput
+            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
             className="input"
             type="text"
             onChangeText={text => setInputMessage(text)}
@@ -80,10 +82,7 @@ function Chat() {
         title='Press me'
         type="submit"
         value="Submit"
-        className="button is-primary"
-        style={{
-          marginTop: "10px"
-        }}
+        color='orange'
         onPress={handleSubmit}
       >
         </Button>

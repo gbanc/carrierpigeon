@@ -1,14 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
 import Chat from "./containers/Chat";
 import Signup from "./containers/Signup";
 import Login from "./containers/Login";
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View>
       <Chat/>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
