@@ -6,7 +6,7 @@ import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
 function Chat() {
   const [inputMessage, setInputMessage] = useState(0);
-  const [messages, setMessages] = useState("");
+  const [messages, setMessages] = useState([]);
   let socket = new Socket("http://localhost:4000/socket", {params:
     {token: window.userToken}
   });
@@ -32,6 +32,27 @@ function Chat() {
   };
   
   
+
+
+    const newmessages = messages.map((message, index) => {
+      if(index % 2 == 0) {
+        return (
+          <UserMessage
+            key = { index }
+            username = { "GenericUsername" }
+            message = { message }
+          />
+        )
+      } else {
+        return (
+          <ServerMessage
+            key = { index }
+            username = { "Server" }
+            message = { message }
+          />
+        )
+      }
+    })
 
     
   return (
@@ -78,7 +99,7 @@ function Chat() {
     width: "100%"
   }}
 >
-<Text>{messages}</Text>
+{newmessages}
 </View>
 
     </View>

@@ -1,20 +1,19 @@
 import React from "react";
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+
 class ServerMessage extends React.Component {
   render() {
     return (
-      <div className="box" style={{ marginBottom: "10px" }}>
-        <article className="media">
-          <div className="media-content">
-            <div className="content">
-              <p>
-                <strong>{this.props.username}</strong>
-                <br/>
-                {this.props.message}
-              </p>
-            </div>
-          </div>
-        </article>
-      </div>
+      <View className="box" >
+        <View className="media">
+          <View className="media-content">
+            <View className="content">
+               <Text> {this.props.username}</Text>
+                <Text>{this.props.message}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
     )
   }
 }
