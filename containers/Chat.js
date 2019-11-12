@@ -7,7 +7,9 @@ import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 function Chat() {
   const [inputMessage, setInputMessage] = useState(0);
   const [messages, setMessages] = useState([]);
-  const socket = new Socket("http://192.168.1.148:4000/socket", {});
+  const socket = new Socket("http://192.168.1.148:4000/socket", {params:
+  {token: window.userToken}
+  });
   socket.onOpen(event => console.log('Connected.'))
   socket.onError(event => console.log('Cannot connect.'))
   socket.onClose(event => console.log('Goodbye.'))
@@ -16,18 +18,20 @@ function Chat() {
   channel.join()
   .receive("ok", response => { console.log("Joined successfully", response) })
 
-  channel.on("new_msg", payload => {
-    setMessages(messages.concat(payload.body))
-  })
-
   useEffect(() => {
+    channel.on("new_msg", payload => {
+      setMessages(messages.concat(payload.body))
+    })
   }, []);
 
 
-  const handleSubmit = (evt) => {
+  handleSubmit = (evt) => {
     evt.preventDefault();
     //alert(`Submitting message ${inputMessage}`)
     channel.push("new_msg", {body: inputMessage})
+    .receive('ok', (msg) => console.log('sent'))
+    .receive('error', (reasons) => console.log('flop', reasons))
+    .receive('timeout', () => console.log('slow much?'))
     setMessages(messages.concat(inputMessage))
     setInputMessage(0)
   };
