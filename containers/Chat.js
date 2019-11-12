@@ -4,19 +4,21 @@ import UserMessage from '../presentationals/UserMessage'
 import ServerMessage from '../presentationals/ServerMessage';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
+const socket = new Socket("http://192.168.1.148:4000/socket", {params:
+{token: window.userToken}
+});
+socket.onOpen(event => console.log('Connected.'))
+socket.onError(event => console.log('Cannot connect.'))
+socket.onClose(event => console.log('Goodbye.'))
+socket.connect({})
+const channel = socket.channel("room:lobby", {});
+channel.join()
+.receive("ok", response => { console.log("Joined successfully", response) })
+
+
 function Chat() {
   const [inputMessage, setInputMessage] = useState(0);
   const [messages, setMessages] = useState([]);
-  const socket = new Socket("http://192.168.1.148:4000/socket", {params:
-  {token: window.userToken}
-  });
-  socket.onOpen(event => console.log('Connected.'))
-  socket.onError(event => console.log('Cannot connect.'))
-  socket.onClose(event => console.log('Goodbye.'))
-  socket.connect({})
-  const channel = socket.channel("room:lobby", {});
-  channel.join()
-  .receive("ok", response => { console.log("Joined successfully", response) })
 
   useEffect(() => {
     channel.on("new_msg", payload => {
