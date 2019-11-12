@@ -1,80 +1,61 @@
-import React from "react";
+import React,{ useState, useEffect } from "react";
 import {Socket} from "phoenix"
 import UserMessage from '../presentationals/UserMessage'
 import ServerMessage from '../presentationals/ServerMessage';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
 
-class Chat extends React.Component {
+function Chat() {
+  const [inputMessage, setInputMessage] = useState(0);
+  const [messages, setMessages] = useState("");
+  let socket = new Socket("http://localhost:4000/socket", {params:
+    {token: window.userToken}
+  });
+  socket.connect();
+  const channel = socket.channel("room:lobby", {});
+  channel.join()
+  .receive("ok", response => { console.log("Joined successfully", response) })
 
+  useEffect(() => {
+
+    channel.on("new_msg", payload => {
+      setMessages(messages.concat(payload.body))
+    })
+  }, []);
+
+
+  const handleSubmit = (evt) => {
+    evt.preventDefault();
+    alert(`Submitting message ${inputMessage}`)
+    channel.push("new_msg", {body: inputMessage})
+    setMessages(messages.concat(inputMessage))
+    setInputMessage(0)
+  };
   
-  constructor() {
-    super();
-    this.state = {
-      inputMessage: "",
-      messages: []
+  
+  setMessages(Array.isArray(messages) && messages.map((message, index) => {
+    if(index % 2 == 0) {
+      return (
+        <UserMessage
+          key = { index }
+          username = { "GenericUsername" }
+          message = { message }
+        />
+      )
+    } else {
+      return (
+        <ServerMessage
+          key = { index }
+          username = { "Server" }
+          message = { message }
+        />
+      )
     }
-    let socket = new Socket("http://localhost:4000/socket", {params:
-      {token: window.userToken}
-    });
-    socket.connect();
-    this.channel = socket.channel("room:lobby", {});
-  }
-
-
-  componentWillMount() {
-    this.channel.join()
-      .receive("ok", response => { console.log("Joined successfully", response) })
-
-    this.channel.on("new_msg", payload => {
-      this.setState({
-        messages: this.state.messages.concat(payload.body)
-      })
-    })
-  }
-
-
-  handleInputMessage(event) {
-    this.setState({
-      inputMessage: event.target.value
-    })
-  }
-
-
-  handleSubmit(event) {
-    event.preventDefault();
-    this.channel.push("new_msg", {body: this.state.inputMessage})
-    this.setState({
-      messages: this.state.messages.concat(this.state.inputMessage),
-      inputMessage: ""
-    })
-  }
-
-
-  render() {
-    const messages = this.state.messages.map((message, index) => {
-      if(index % 2 == 0) {
-        return (
-          <UserMessage
-            key = { index }
-            username = { "GenericUsername" }
-            message = { message }
-          />
-        )
-      } else {
-        return (
-          <ServerMessage
-            key = { index }
-            username = { "Server" }
-            message = { message }
-          />
-        )
-      }
-    });
+  });)
     
   return (
     <View>
     <View>
-      <View onSubmit={this.handleSubmit.bind(this)} >
+      <View>
       <View className="field">
         <View
           className="label"
@@ -85,11 +66,11 @@ class Chat extends React.Component {
         <Text>GenericUsername:</Text>
         </View>
         <View className="control">
-          <View
+          <TextInput
             className="input"
             type="text"
-            value = {this.state.inputMessage}
-            onChange = {this.handleInputMessage.bind(this)}
+            // value = {inputMessage}
+            //onChangeText = {() => setInputMessage(inputMessage)}
           />
         </View>
       </View>
@@ -101,8 +82,8 @@ class Chat extends React.Component {
         style={{
           marginTop: "10px"
         }}
+        onPress={handleSubmit}
       >
-        Submit
         </Button>
       </View>
       <View
@@ -116,12 +97,12 @@ class Chat extends React.Component {
     width: "100%"
   }}
 >
-{messages}
+<Text>{messages}</Text>
 </View>
 
     </View>
     </View>
   )
   }
-}
+
 export default Chat
