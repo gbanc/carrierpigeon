@@ -3,12 +3,13 @@ import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
 import Chat from "./containers/Chat";
 import Signup from "./containers/Signup";
 import Login from "./containers/Login";
+import Chart from "./containers/Charts";
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView>
       <View>
-      <Chat/>
+      <Chart/>
       </View>
     </SafeAreaView>
   );

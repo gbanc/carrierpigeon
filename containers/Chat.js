@@ -2,9 +2,10 @@ import React,{ useState, useEffect } from "react";
 import {Socket} from "phoenix"
 import UserMessage from '../presentationals/UserMessage'
 import ServerMessage from '../presentationals/ServerMessage';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
-const socket = new Socket("http://192.168.1.148:4000/socket", {params:
+/* BTW EXPO ip changes */
+const socket = new Socket("http://192.168.1.134:4000/socket", {params:
 {token: window.userToken}
 });
 socket.onOpen(event => console.log('Connected.'))
@@ -73,25 +74,25 @@ function Chat() {
             textAlign: "left"
           }}
         >
-        <Text>GenericUsername:</Text>
+        <Text style={styles.title}>GenericUsername:</Text>
         </View>
         <View className="control">
           <TextInput
-            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-            className="input"
+            style={styles.nameInput}
             type="text"
             onChangeText={text => setInputMessage(text)}
           />
         </View>
       </View>
-      <Button
+      <TouchableOpacity
         title='Press me'
         type="submit"
         value="Submit"
         color='orange'
         onPress={handleSubmit}
       >
-        </Button>
+        <Text style={styles.buttonText}>Send</Text>
+        </TouchableOpacity>
       </View>
       <View
   className="flex-container"
@@ -111,5 +112,24 @@ function Chat() {
     </View>
   )
   }
-
+  const offset = 24;
+  const styles = StyleSheet.create({
+    title: { // 4.
+      marginTop: offset,
+      marginLeft: offset,
+      fontSize: offset,
+    },
+    nameInput: { // 3. <- Add a style for the input
+      height: offset * 2,
+      margin: offset,
+      paddingHorizontal: offset,
+      borderColor: '#111111',
+      borderWidth: 1,
+    },
+    buttonText: { // 5.
+      marginLeft: offset,
+      fontSize: offset,
+    },
+  })
+  
 export default Chat
